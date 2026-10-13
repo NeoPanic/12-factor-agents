@@ -1,24 +1,21 @@
-[← Back to README](https://github.com/humanlayer/12-factor-agents/blob/main/README.md)
+[← Back to README](../README.md)
 
 ### 8. Own your control flow
 
 If you own your control flow, you can do lots of fun things.
 
-![180-control-flow](https://github.com/humanlayer/12-factor-agents/blob/main/img/180-control-flow.png)
-
+![180-control-flow](../img/180-control-flow.png)
 
 Build your own control structures that make sense for your specific use case. Specifically, certain types of tool calls may be reason to break out of the loop and wait for a response from a human or another long-running task like a training pipeline. You may also want to incorporate custom implementation of:
 
 - summarization or caching of tool call results
 - LLM-as-judge on structured output
-- context window compaction or other [memory management](https://github.com/humanlayer/12-factor-agents/blob/main/content/factor-03-own-your-context-window.md)
+- context window compaction or other [memory management](factor-03-own-your-context-window.md)
 - logging, tracing, and metrics
 - client-side rate limiting
 - durable sleep / pause / "wait for event"
 
-
 The below example shows three possible control flow patterns:
-
 
 - request_clarification: model asked for more info, break the loop and wait for a response from a human
 - fetch_git_tags: model asked for a list of git tags, fetch the tags, append to context window, and pass straight back to the model
@@ -29,8 +26,8 @@ def handle_next_step(thread: Thread):
 
   while True:
     next_step = await determine_next_step(thread_to_prompt(thread))
-    
-    # inlined for clarity - in reality you could put 
+
+    # inlined for clarity - in reality you could put
     # this in a method, use exceptions for control flow, or whatever you want
     if next_step.intent == 'request_clarification':
       thread.events.append({
@@ -70,7 +67,7 @@ def handle_next_step(thread: Thread):
 
 This pattern allows you to interrupt and resume your agent's flow as needed, creating more natural conversations and workflows.
 
-**Example** - the number one feature request I have for every AI framework out there is we need to be able to interrupt 
+**Example** - the number one feature request I have for every AI framework out there is we need to be able to interrupt
 a working agent and resume later, ESPECIALLY between the moment of tool **selection** and the moment of tool **invocation**.
 
 Without this level of resumability/granularity, there's no way to review/approve the tool call before it runs, which means
@@ -80,7 +77,6 @@ you're forced to either:
 2. Restrict the agent to only low-stakes, low-risk calls like research and summarization
 3. Give the agent access to do bigger, more useful things, and just yolo hope it doesn't screw up
 
+You may notice this is closely related to [factor 5 - unify execution state and business state](factor-05-unify-execution-state.md) and [factor 6 - launch/pause/resume with simple APIs](factor-06-launch-pause-resume.md), but can be implemented independently.
 
-You may notice this is closely related to [factor 5 - unify execution state and business state](https://github.com/humanlayer/12-factor-agents/blob/main/content/factor-05-unify-execution-state.md) and [factor 6 - launch/pause/resume with simple APIs](https://github.com/humanlayer/12-factor-agents/blob/main/content/factor-06-launch-pause-resume.md), but can be implemented independently.
-
-[← Contact Humans With Tools](https://github.com/humanlayer/12-factor-agents/blob/main/content/factor-07-contact-humans-with-tools.md) | [Compact Errors →](https://github.com/humanlayer/12-factor-agents/blob/main/content/factor-09-compact-errors.md)
+[← Contact Humans With Tools](factor-07-contact-humans-with-tools.md) | [Compact Errors →](factor-09-compact-errors.md)
